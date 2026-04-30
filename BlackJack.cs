@@ -14,7 +14,10 @@ namespace Lab8
         private bool _playerTurn;
         private readonly Player? _currentPlayer;
 
-        public BlackJack(Player? currentPlayer = null)
+        // Designer requires parameterless ctor; forward to main ctor
+        public BlackJack() : this(null) { }
+
+        public BlackJack(Player? currentPlayer)
         {
             InitializeComponent();
             _currentPlayer = currentPlayer;
@@ -28,6 +31,8 @@ namespace Lab8
             dealerPanel.Controls.Clear();
             playerPanel.Controls.Clear();
             dealerTotalLabel.Text = "Dealer: 0";
+
+            // show player name if available
             playerTotalLabel.Text = _currentPlayer is not null
                 ? $"Gracz: {_currentPlayer.Name} (0 kart)"
                 : "Gracz: 0 (0)";
@@ -118,21 +123,7 @@ namespace Lab8
                 BorderStyle = BorderStyle.FixedSingle
             };
 
-            // rank at top
-            var rankLabel = new Label
-            {
-                Text = card.DisplayRank,
-                AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 44,
-                Font = new Font("Segoe UI", 18, FontStyle.Bold),
-                ForeColor = card.IsRedSuit ? Color.DarkRed : Color.Black,
-                BackColor = Color.Transparent
-            };
-            p.Controls.Add(rankLabel);
-
-            // big suit symbol in center (adds visible suit symbol in addition to color)
+            // create controls in the correct z-order: suit (background), then rank (foreground), then small suit
             var suitCenter = new Label
             {
                 Text = card.Suit,
@@ -140,22 +131,41 @@ namespace Lab8
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Fill,
                 Font = new Font("Segoe UI Symbol", 22, FontStyle.Regular),
-                ForeColor = card.IsRedSuit ? Color.Red : Color.Black,
+                ForeColor = card.IsRedSuit ? Color.FromArgb(180, Color.Red) : Color.FromArgb(80, Color.Black),
                 BackColor = Color.Transparent
             };
-            p.Controls.Add(suitCenter);
 
-            // small suit top-right (as before)
+            var center = new Label
+            {
+                Text = card.DisplayRank,
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                ForeColor = card.IsRedSuit ? Color.DarkRed : Color.Black,
+                BackColor = Color.Transparent
+            };
+
             var topRight = new Label
             {
                 Text = card.Suit,
                 AutoSize = true,
                 Font = new Font("Segoe UI", 10, FontStyle.Regular),
                 ForeColor = card.IsRedSuit ? Color.Red : Color.Black,
-                Location = new Point(p.Width - 18, 4),
                 BackColor = Color.Transparent
             };
+
+            // add controls so rank is on top, then bring to front explicitly to ensure visibility
+            p.Controls.Add(suitCenter);
+            p.Controls.Add(center);
             p.Controls.Add(topRight);
+
+            // ensure rank is above the suit glyph and small suit above both
+            center.BringToFront();
+            topRight.BringToFront();
+
+            // position top-right after adding (panel has its size)
+            topRight.Location = new Point(p.Width - topRight.Width - 6, 4);
 
             return p;
         }
@@ -276,6 +286,14 @@ namespace Lab8
             UpdateTotalsLabel(revealDealer: true);
             button1.Enabled = false;
             button2.Enabled = false;
+
+            // save to history with score detail
+            var playerVal = HandValue(_playerHand);
+            var dealerVal = HandValue(_dealerHand);
+            var resultText = $"{message} ({playerVal} - {dealerVal})";
+            var playerName = _currentPlayer?.Name ?? "Brak";
+            GameHistory.AddEntry(new HistoryEntry(playerName, "Blackjack", resultText, DateTime.Now));
+
             MessageBox.Show(message, "Wynik", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -287,7 +305,7 @@ namespace Lab8
         private class Card
         {
             public string Rank { get; }
-            public string Suit { get; }
+            public string Suit { get; } // one of ♠ ♥ ♦ ♣
             public bool IsAce => Rank == "A";
             public bool IsFace => Rank == "J" || Rank == "Q" || Rank == "K";
             public bool IsRedSuit => Suit == "♥" || Suit == "♦";
