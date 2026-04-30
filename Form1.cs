@@ -29,5 +29,23 @@ namespace Lab8
             _players.Add(player);
             label1.Text = $"Aktualny gracz: {player.Name} (ID: {player.Id})";
         }
+
+        private void BlackJack_Click(object? sender, EventArgs e)
+        {
+            Player? current = null;
+            if (_players.Count > 0)
+            {
+                current = _players[_players.Count - 1];
+            }
+
+            var blackjackForm = new BlackJack(current);
+            blackjackForm.Show(this);
+        }
+
+        private void His_Click(object sender, EventArgs e)
+        {
+            var HisForm = new Historia();
+            HisForm.Show(this);
+        }
     }
 }

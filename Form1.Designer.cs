@@ -44,6 +44,7 @@
             BlackJack.TabIndex = 0;
             BlackJack.Text = "Blackjack";
             BlackJack.UseVisualStyleBackColor = true;
+            BlackJack.Click += BlackJack_Click;
             // 
             // Poker
             // 
@@ -80,6 +81,7 @@
             His.TabIndex = 4;
             His.Text = "Historia";
             His.UseVisualStyleBackColor = true;
+            His.Click += His_Click;
             // 
             // label1
             // 
