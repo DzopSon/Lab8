@@ -28,12 +28,79 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            BlackJack = new Button();
+            Poker = new Button();
+            button3 = new Button();
+            Dod = new Button();
+            His = new Button();
+            SuspendLayout();
+            // 
+            // BlackJack
+            // 
+            BlackJack.Location = new Point(37, 115);
+            BlackJack.Name = "BlackJack";
+            BlackJack.Size = new Size(203, 66);
+            BlackJack.TabIndex = 0;
+            BlackJack.Text = "Blackjack";
+            BlackJack.UseVisualStyleBackColor = true;
+            // 
+            // Poker
+            // 
+            Poker.Location = new Point(298, 115);
+            Poker.Name = "Poker";
+            Poker.Size = new Size(203, 66);
+            Poker.TabIndex = 1;
+            Poker.Text = "Poker";
+            Poker.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            button3.Location = new Point(559, 115);
+            button3.Name = "button3";
+            button3.Size = new Size(203, 66);
+            button3.TabIndex = 2;
+            button3.Text = "button3";
+            button3.UseVisualStyleBackColor = true;
+            // 
+            // Dod
+            // 
+            Dod.Location = new Point(298, 244);
+            Dod.Name = "Dod";
+            Dod.Size = new Size(203, 34);
+            Dod.TabIndex = 3;
+            Dod.Text = "Dodaj gracza";
+            Dod.UseVisualStyleBackColor = true;
+            // 
+            // His
+            // 
+            His.Location = new Point(298, 347);
+            His.Name = "His";
+            His.Size = new Size(203, 30);
+            His.TabIndex = 4;
+            His.Text = "Historia";
+            His.UseVisualStyleBackColor = true;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(His);
+            Controls.Add(Dod);
+            Controls.Add(button3);
+            Controls.Add(Poker);
+            Controls.Add(BlackJack);
+            Name = "Form1";
+            Text = "Form1";
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private Button BlackJack;
+        private Button Poker;
+        private Button button3;
+        private Button Dod;
+        private Button His;
     }
 }
