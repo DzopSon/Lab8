@@ -59,10 +59,14 @@ namespace Lab8
 
         bool isPlayerTurn = true;
         bool waitingForColorChoice = false;
+        string playerName;
 
-        public Uno()
+        public Uno(Player? currentPlayer = null)
         {
             InitializeComponent();
+
+            playerName = currentPlayer?.Name ?? "Brak";
+
             SetupUI();
             StartGame();
         }
@@ -382,7 +386,7 @@ namespace Lab8
             isPlayerTurn = false;
             UpdateUI();
 
-            Task.Delay(1500).ContinueWith(_ => Invoke(new Action(() => BotTurn())));
+            ScheduleBotTurn(1500);
         }
 
         private void BtnColorChoice_Click(object sender, EventArgs e)
@@ -419,7 +423,7 @@ namespace Lab8
 
                 isPlayerTurn = false;
                 lblStatus.Text = "Ruch Bota...";
-                Task.Delay(1500).ContinueWith(_ => Invoke(new Action(() => BotTurn())));
+                ScheduleBotTurn(1500);
             }
             else
             {
@@ -427,7 +431,7 @@ namespace Lab8
                 {
                     lblStatus.Text = "Zostałeś zablokowany! Bot gra znowu.";
                     UpdateUI();
-                    Task.Delay(1500).ContinueWith(_ => Invoke(new Action(() => BotTurn())));
+                    ScheduleBotTurn(1500);
                     return;
                 }
                 else if (playedCard.Value == UnoValue.PlusDwa)
@@ -436,7 +440,7 @@ namespace Lab8
                     playerHand.Add(DrawOneCard());
                     lblStatus.Text = "Dostajesz +2 karty i tracisz kolejkę! Bot gra znowu.";
                     UpdateUI();
-                    Task.Delay(2000).ContinueWith(_ => Invoke(new Action(() => BotTurn())));
+                    ScheduleBotTurn(2000);
                     return;
                 }
 
@@ -493,6 +497,8 @@ namespace Lab8
             if (playerHand.Count == 0)
             {
                 lblStatus.Text = "🎉 WYGRAŁEŚ! 🎉";
+                GameHistory.AddEntry(new HistoryEntry(playerName, "UNO", "Wygrana", DateTime.Now));
+
                 MessageBox.Show("Gratulacje! Pozbyłeś się wszystkich kart!", "Koniec Gry");
                 StartGame();
                 return true;
@@ -500,11 +506,33 @@ namespace Lab8
             else if (botHand.Count == 0)
             {
                 lblStatus.Text = "💀 PRZEGRAŁEŚ! Bot wygrał. 💀";
+                GameHistory.AddEntry(new HistoryEntry(playerName, "UNO", "Przegrana", DateTime.Now));
+
                 MessageBox.Show("Niestety, Bot wygrał tę partię.", "Koniec Gry");
                 StartGame();
                 return true;
             }
             return false;
+        }
+        void ScheduleBotTurn(int delayMs)
+        {
+            Task.Delay(delayMs).ContinueWith(_ =>
+            {
+                if (this.IsHandleCreated && !this.IsDisposed)
+                {
+                    try
+                    {
+                        this.Invoke(new Action(() =>
+                        {
+                            if (!this.IsDisposed) BotTurn();
+                        }));
+                    }
+                    catch
+                    {
+   
+                    }
+                }
+            });
         }
     }
 }

@@ -44,6 +44,7 @@ namespace Lab8
         Button[] oppButtons;
         Button[] communityButtons;
 
+        string playerName;
         int playerMoney = 1000;
         int oppMoney = 1000;
         int pot = 0;
@@ -51,9 +52,12 @@ namespace Lab8
         int gamePhase = -1;
         bool revealOppCards = false;
 
-        public Poker()
+        public Poker(Player? currentPlayer = null)
         {
             InitializeComponent();
+
+            playerName = currentPlayer?.Name ?? "Brak";
+
             FormatUI();
             StartNewHand();
         }
@@ -410,11 +414,13 @@ namespace Lab8
             {
                 lblStatus.Text += "\nZBANKRUTOWAŁEŚ! Koniec gry.";
                 btnDeal.Text = "Zagraj od nowa";
+                GameHistory.AddEntry(new HistoryEntry(playerName, "Poker", "Przegrana (Bankrut)", DateTime.Now));
             }
             else if (oppMoney <= 0)
             {
                 lblStatus.Text += "\nBOT ZBANKRUTOWAŁ! Wygrywasz turniej!";
                 btnDeal.Text = "Zagraj od nowa";
+                GameHistory.AddEntry(new HistoryEntry(playerName, "Poker", "Wygrana", DateTime.Now));
             }
             else
             {

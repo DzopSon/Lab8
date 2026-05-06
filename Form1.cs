@@ -50,15 +50,25 @@ namespace Lab8
 
         private void Poker_Click(object sender, EventArgs e)
         {
-            Poker oknoGry = new Poker();
+            Player? current = null;
+            if (_players.Count > 0)
+            {
+                current = _players[_players.Count - 1];
+            }
+
+            Poker oknoGry = new Poker(current);
             oknoGry.ShowDialog();
         }
 
         private void Uno_Button_Click(object sender, EventArgs e)
         {
-            Uno graUno = new Uno();
+            Player? current = null;
+            if (_players.Count > 0)
+            {
+                current = _players[_players.Count - 1];
+            }
 
-            // 2. Otwieramy okno gry
+            Uno graUno = new Uno(current);
             graUno.ShowDialog();
         }
     }
