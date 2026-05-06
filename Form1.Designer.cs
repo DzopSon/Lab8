@@ -30,7 +30,7 @@
         {
             BlackJack = new Button();
             Poker = new Button();
-            button3 = new Button();
+            Uno_Button = new Button();
             Dod = new Button();
             His = new Button();
             SuspendLayout();
@@ -52,15 +52,17 @@
             Poker.TabIndex = 1;
             Poker.Text = "Poker";
             Poker.UseVisualStyleBackColor = true;
+            Poker.Click += Poker_Click;
             // 
-            // button3
+            // Uno_Button
             // 
-            button3.Location = new Point(559, 115);
-            button3.Name = "button3";
-            button3.Size = new Size(203, 66);
-            button3.TabIndex = 2;
-            button3.Text = "button3";
-            button3.UseVisualStyleBackColor = true;
+            Uno_Button.Location = new Point(559, 115);
+            Uno_Button.Name = "Uno_Button";
+            Uno_Button.Size = new Size(203, 66);
+            Uno_Button.TabIndex = 2;
+            Uno_Button.Text = "Uno";
+            Uno_Button.UseVisualStyleBackColor = true;
+            Uno_Button.Click += Uno_Button_Click;
             // 
             // Dod
             // 
@@ -87,7 +89,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(His);
             Controls.Add(Dod);
-            Controls.Add(button3);
+            Controls.Add(Uno_Button);
             Controls.Add(Poker);
             Controls.Add(BlackJack);
             Name = "Form1";
@@ -99,7 +101,7 @@
 
         private Button BlackJack;
         private Button Poker;
-        private Button button3;
+        private Button Uno_Button;
         private Button Dod;
         private Button His;
     }
