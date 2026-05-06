@@ -33,6 +33,7 @@
             Uno_Button = new Button();
             Dod = new Button();
             His = new Button();
+            label1 = new Label();
             SuspendLayout();
             // 
             // BlackJack
@@ -43,6 +44,7 @@
             BlackJack.TabIndex = 0;
             BlackJack.Text = "Blackjack";
             BlackJack.UseVisualStyleBackColor = true;
+            BlackJack.Click += BlackJack_Click;
             // 
             // Poker
             // 
@@ -81,12 +83,23 @@
             His.TabIndex = 4;
             His.Text = "Historia";
             His.UseVisualStyleBackColor = true;
+            His.Click += His_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(37, 34);
+            label1.Name = "label1";
+            label1.Size = new Size(113, 20);
+            label1.TabIndex = 5;
+            label1.Text = "Aktualny gracz: ";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label1);
             Controls.Add(His);
             Controls.Add(Dod);
             Controls.Add(Uno_Button);
@@ -95,6 +108,7 @@
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -104,5 +118,6 @@
         private Button Uno_Button;
         private Button Dod;
         private Button His;
+        private Label label1;
     }
 }
