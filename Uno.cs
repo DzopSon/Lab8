@@ -53,6 +53,7 @@ namespace Lab8
         FlowLayoutPanel flpBot;
         Button btnDeck;
         Button btnTopCard;
+        Button btnCheat;
         Label lblStatus;
         Panel pnlColorPicker;
         Button btnRules;
@@ -143,6 +144,22 @@ namespace Lab8
             btnTopCard.FlatAppearance.BorderSize = 2;
             this.Controls.Add(btnTopCard);
 
+            btnCheat = new Button
+            {
+                Location = new Point(650, 330),
+                Size = new Size(140, 50),
+                BackColor = Color.DarkViolet,
+                ForeColor = Color.White,
+                Font = new Font("Arial", 10, FontStyle.Bold),
+                Text = "OSZUKUJ (50%)",
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnCheat.FlatAppearance.BorderColor = Color.White;
+            btnCheat.FlatAppearance.BorderSize = 2;
+            btnCheat.Click += BtnCheat_Click;
+            this.Controls.Add(btnCheat);
+
             lblStatus = new Label
             {
                 Location = new Point(50, 480),
@@ -195,9 +212,46 @@ namespace Lab8
                             "• ⊘ STOP - Przeciwnik traci swoją kolejkę.\n" +
                             "• +2 - Przeciwnik musi dobrać 2 karty i traci kolejkę.\n" +
                             "• ZMIANA (Czarna) - Możesz ją zagrać na dowolną kartę. Ty decydujesz, jaki kolor ma obowiązywać od teraz.\n\n" +
+                            "🔴 MECHANIKA OSZUSTWA:\n" +
+                            "Raz w swoim ruchu możesz kliknąć 'OSZUKUJ (50%)'. Jeśli Ci się uda, losowa karta z Twojej ręki trafi do ręki Bota. Jeśli Bot Cię przyłapie (masz na to 50% szans) - natychmiast przegrywasz całą grę!\n\n" +
                             "Wygrywa ten gracz, który jako pierwszy pozbędzie się wszystkich swoich kart!";
 
             MessageBox.Show(zasady, "Instrukcja gry", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnCheat_Click(object sender, EventArgs e)
+        {
+            if (!isPlayerTurn || waitingForColorChoice) return;
+            if (playerHand.Count == 0) return;
+
+            Random r = new Random();
+            int chance = r.Next(100);
+
+            if (chance < 50)
+            {
+                // SUKCES (0-49)
+                int randomIndex = r.Next(playerHand.Count);
+                Card cardToGive = playerHand[randomIndex];
+
+                playerHand.RemoveAt(randomIndex);
+                botHand.Add(cardToGive);
+
+                // POKAZUJE KOLOR KARTY W KOMUNIKACIE
+                string cardInfo = $"[{cardToGive.Color}] {cardToGive.ToString().Replace("\n", " ")}";
+                MessageBox.Show($"Udało się! Niepostrzeżenie podrzuciłeś botowi kartę:\n{cardInfo}", "Sukces Oszusta", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                UpdateUI();
+            }
+            else
+            {
+                // PORAŻKA (50-99)
+                lblStatus.Text = "💀 PRZEGRAŁEŚ! Zostałeś przyłapany. 💀";
+
+                GameHistory.AddEntry(new HistoryEntry(playerName, "UNO", "Przegrana (Oszustwo)", DateTime.Now));
+
+                MessageBox.Show("Zostałeś przyłapany na próbie podrzucenia karty! Natychmiastowo przegrywasz grę.", "Koniec Gry", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                StartGame();
+            }
         }
 
         void GenerateDeck()
@@ -307,7 +361,7 @@ namespace Lab8
                     Size = new Size(95, 130),
                     BackColor = card.GetCardColor(),
                     ForeColor = Color.White,
-                    Font = new Font("Arial", 8.5f, FontStyle.Bold), 
+                    Font = new Font("Arial", 8.5f, FontStyle.Bold),
                     Padding = new Padding(0),
                     Text = card.ToString(),
                     FlatStyle = FlatStyle.Flat,
@@ -400,6 +454,26 @@ namespace Lab8
             UpdateUI();
 
             ProcessCardEffectAndNextTurn(discardPile.Last());
+        }
+
+        void ScheduleBotTurn(int delayMs)
+        {
+            Task.Delay(delayMs).ContinueWith(_ =>
+            {
+                if (this.IsHandleCreated && !this.IsDisposed)
+                {
+                    try
+                    {
+                        this.Invoke(new Action(() =>
+                        {
+                            if (!this.IsDisposed) BotTurn();
+                        }));
+                    }
+                    catch
+                    {
+                    }
+                }
+            });
         }
 
         void ProcessCardEffectAndNextTurn(Card playedCard)
@@ -513,26 +587,6 @@ namespace Lab8
                 return true;
             }
             return false;
-        }
-        void ScheduleBotTurn(int delayMs)
-        {
-            Task.Delay(delayMs).ContinueWith(_ =>
-            {
-                if (this.IsHandleCreated && !this.IsDisposed)
-                {
-                    try
-                    {
-                        this.Invoke(new Action(() =>
-                        {
-                            if (!this.IsDisposed) BotTurn();
-                        }));
-                    }
-                    catch
-                    {
-   
-                    }
-                }
-            });
         }
     }
 }
