@@ -13,6 +13,8 @@ namespace Lab8
         private readonly List<Card> _dealerHand = new();
         private bool _playerTurn;
         private readonly Player? _currentPlayer;
+        private readonly Random _rng = new(); // used for 50% chance
+        private bool _dealerCardRevealed; // controls whether dealer's second card stays visible this round
 
         // Designer requires parameterless ctor; forward to main ctor
         public BlackJack() : this(null) { }
@@ -21,6 +23,10 @@ namespace Lab8
         {
             InitializeComponent();
             _currentPlayer = currentPlayer;
+
+            // wire the "Podejrzyj kartę" button click
+            button3.Click += button3_Click;
+
             StartNewRound();
         }
 
@@ -31,6 +37,9 @@ namespace Lab8
             dealerPanel.Controls.Clear();
             playerPanel.Controls.Clear();
             dealerTotalLabel.Text = "Dealer: 0";
+
+            // reset peek state for new round
+            _dealerCardRevealed = false;
 
             // show player name if available
             playerTotalLabel.Text = _currentPlayer is not null
@@ -49,6 +58,7 @@ namespace Lab8
             _playerTurn = true;
             button1.Enabled = true; // Hit
             button2.Enabled = true; // Stand
+            button3.Enabled = true; // allow peek each round
 
             RenderHands(initialHideDealerSecond: true);
             UpdateTotalsLabel();
@@ -67,7 +77,8 @@ namespace Lab8
             {
                 var card = _dealerHand[i];
                 Control ctrl;
-                if (i == 1 && initialHideDealerSecond && _playerTurn)
+                // If dealer card was revealed by a successful peek we never hide it this round
+                if (i == 1 && initialHideDealerSecond && _playerTurn && !_dealerCardRevealed)
                 {
                     ctrl = CreateCardBackControl();
                 }
@@ -123,7 +134,6 @@ namespace Lab8
                 BorderStyle = BorderStyle.FixedSingle
             };
 
-            // create controls in the correct z-order: suit (background), then rank (foreground), then small suit
             var suitCenter = new Label
             {
                 Text = card.Suit,
@@ -172,6 +182,9 @@ namespace Lab8
 
         private void UpdateTotalsLabel(bool revealDealer = false)
         {
+            // if dealer card was revealed, always show dealer totals
+            if (_dealerCardRevealed) revealDealer = true;
+
             var playerVal = HandValue(_playerHand);
             if (_currentPlayer is not null)
             {
@@ -234,6 +247,8 @@ namespace Lab8
         {
             if (!_playerTurn) return;
             _playerHand.Add(_deck.Draw());
+            // pass same initialHideDealerSecond: true — RenderHands will keep the dealer card visible
+            // if _dealerCardRevealed is true
             RenderHands(initialHideDealerSecond: true);
             var playerVal = HandValue(_playerHand);
             UpdateTotalsLabel();
@@ -280,12 +295,45 @@ namespace Lab8
             }
         }
 
+        // "Podejrzyj kartę" — 50% success reveal, 50% dealer notices and player loses
+        private void button3_Click(object? sender, EventArgs e)
+        {
+            if (!_playerTurn) return;
+
+            // need at least two dealer cards (one hidden)
+            if (_dealerHand.Count < 2)
+            {
+                MessageBox.Show("Brak ukrytej karty do podejrzenia.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // disable button to prevent repeated peeks in same round
+            button3.Enabled = false;
+
+            var success = _rng.NextDouble() < 0.5;
+
+            if (success)
+            {
+                // reveal dealer card visually for the rest of the round (no message, continue game)
+                _dealerCardRevealed = true;
+                RenderHands(initialHideDealerSecond: false);
+                UpdateTotalsLabel(revealDealer: true);
+                // no MessageBox here — play continues
+            }
+            else
+            {
+                // failure -> dealer notices and player immediately loses
+                EndRound("Dealer zauważył — przegrałeś!");
+            }
+        }
+
         private void EndRound(string message)
         {
             RenderHands(initialHideDealerSecond: false);
             UpdateTotalsLabel(revealDealer: true);
             button1.Enabled = false;
             button2.Enabled = false;
+            button3.Enabled = false;
 
             // save to history with score detail
             var playerVal = HandValue(_playerHand);

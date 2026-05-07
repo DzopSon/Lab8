@@ -35,6 +35,7 @@
             playerPanel = new Panel();
             dealerTotalLabel = new Label();
             playerTotalLabel = new Label();
+            button3 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -59,7 +60,7 @@
             // 
             // newRoundButton
             // 
-            newRoundButton.Location = new Point(340, 322);
+            newRoundButton.Location = new Point(128, 323);
             newRoundButton.Name = "newRoundButton";
             newRoundButton.Size = new Size(120, 40);
             newRoundButton.TabIndex = 2;
@@ -99,11 +100,21 @@
             playerTotalLabel.TabIndex = 6;
             playerTotalLabel.Text = "Gracz: 0 (0)";
             // 
+            // button3
+            // 
+            button3.Location = new Point(556, 323);
+            button3.Name = "button3";
+            button3.Size = new Size(147, 40);
+            button3.TabIndex = 7;
+            button3.Text = "Podejrzyj kartę";
+            button3.UseVisualStyleBackColor = true;
+            // 
             // BlackJack
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button3);
             Controls.Add(playerTotalLabel);
             Controls.Add(dealerTotalLabel);
             Controls.Add(playerPanel);
@@ -126,5 +137,6 @@
         private System.Windows.Forms.Panel playerPanel;
         private System.Windows.Forms.Label dealerTotalLabel;
         private System.Windows.Forms.Label playerTotalLabel;
+        private Button button3;
     }
 }
